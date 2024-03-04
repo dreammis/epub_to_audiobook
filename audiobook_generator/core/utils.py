@@ -1,5 +1,9 @@
 import logging
+import re
 from typing import List
+
+import ebooklib
+from ebooklib.epub import EpubHtml
 from mutagen.id3._frames import TIT2, TPE1, TALB, TRCK
 from mutagen.id3 import ID3, ID3NoHeaderError
 
@@ -73,3 +77,16 @@ def is_special_char(char: str) -> bool:
     )  # special unicode punctuation
     logger.debug(f"is_special_char> char={char}, ord={ord_char}, result={result}")
     return result
+
+
+def get_spine_ordered_chapters(book) -> List[EpubHtml]:
+    chapters = []
+
+    # 遍历spine中的项目ID
+    for item_id in book.spine:
+        item = book.get_item_with_id(item_id[0])  # item_id是一个元组，第一个元素是ID
+        if item.get_type() == ebooklib.ITEM_DOCUMENT:
+            chapters.append(item)
+
+    # 返回章节内容的列表
+    return chapters

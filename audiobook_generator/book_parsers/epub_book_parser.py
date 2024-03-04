@@ -9,6 +9,8 @@ from ebooklib import epub
 from audiobook_generator.book_parsers.base_book_parser import BaseBookParser
 from audiobook_generator.config.general_config import GeneralConfig
 
+from utils.epub_to_audiobook.audiobook_generator.core.utils import get_spine_ordered_chapters
+
 logger = logging.getLogger(__name__)
 
 
@@ -42,7 +44,8 @@ class EpubBookParser(BaseBookParser):
 
     def get_chapters(self, break_string) -> List[Tuple[str, str]]:
         chapters = []
-        for item in self.book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
+        sorted_items = get_spine_ordered_chapters(self.book)
+        for item in sorted_items:
             content = item.get_content()
             soup = BeautifulSoup(content, "lxml")
             title = ""
